@@ -37,10 +37,11 @@ LFFD-v1|0.910|0.881|0.780
 LFFD-v2|0.837|0.835|0.729
 CenterFace|0.932|0.921|0.873
 
-> - **RetinaFace-mnet** 是RetinaFace-MobileNet-0.25的简写，来自于非常好的工作[insightface](https://github.com/deepinsight/insightface)。
+> - 模型的训练数据仅包含：WIDER FACE train set
+> - **RetinaFace-mnet** (RetinaFace-MobileNet-0.25)，来自于非常好的工作[insightface](https://github.com/deepinsight/insightface)。
 > - **LFFD-v1** 也是很好的工作[LFFD](https://github.com/YonghaoHe/A-Light-and-Fast-Face-Detector-for-Edge-Devices)。
 > - CenterFace/CenterFace-small的测试方法是MULTI-SCALE，因为训练图像和测试图像尺度的不一致性，多尺度测试才能反应centerface的真实性能。
-   不过，对于SIO(原图单次推理)，CenterFace在val集上也可以达到：92.2% (Easy), 91.1% (Medium) and 78.2% 。
+   不过，对于SIO(原图单次推理)，CenterFace在val集上也可以达到：92.2% (Easy), 91.1% (Medium) and 78.2%，
    而RetinaFace-mnet在val集上是：89.6% (Easy), 87.1% (Medium) and 68.1% 
    
 > - 关于Evaluation的一些思考:[人脸检测小江湖](evaluation.md)。
