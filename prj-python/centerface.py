@@ -5,7 +5,7 @@ import datetime
 
 class CenterFace(object):
     def __init__(self, height, width):
-        self.net = cv2.dnn.readNetFromONNX('centerface.onnx')
+        self.net = cv2.dnn.readNetFromONNX('../models/centerface.onnx')
         self.img_h_new, self.img_w_new, self.scale_h, self.scale_w = self.transform(height, width)
 
     def __call__(self, img, threshold=0.5):
