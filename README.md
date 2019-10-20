@@ -7,11 +7,10 @@
 
  ![image](results/bl4.jpg)   
 
-### 运行环境
 
-- OpenCV 4.1.0
-- Numpy
-- Python3.6+
+### 更新
+
+- 添加ncnn和opencv的工程
 
 ### 准确性
 
@@ -81,3 +80,6 @@ CenterFace-small|4.4ms|5.7ms|7.3ms
   欢迎加入 **QQ Group(912759877)** 交流讨论, 包括但不限：人脸检测、稠密对齐、活体、3D重建等。
 
 
+### 贡献者：
+ - [ywlife](https://github.com/ywlife)
+ - [SyGoing](https://github.com/SyGoing)
