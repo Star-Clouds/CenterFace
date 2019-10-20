@@ -161,15 +161,15 @@ void Centerface::decode(ncnn::Mat & heatmap, ncnn::Mat & scale, ncnn::Mat & offs
 		facebox.score = heatmap_[index];
 
 
-		float box_w = x2 - x1;
-		float box_h = y2 - y1;
+		float box_w = x2 - x1; //=s1?
+		float box_h = y2 - y1; //=s0?
 
 		//std::cout << facebox.x1 << " " << facebox.y1 << " " << facebox.x2 << " " << facebox.y2 << std::endl;
 		for (int j = 0; j < 5; j++) {
 			float *xmap = (float*)landmarks.data + (2 * j + 1)*spacial_size;
 			float *ymap = (float*)landmarks.data + (2 * j)*spacial_size;
-			facebox.landmarks[2*j] = x1 + xmap[index] * box_w;
-			facebox.landmarks[2 * j+1] = y1 + ymap[index] * box_h;
+			facebox.landmarks[2*j] = x1 + xmap[index] * s1;//box_w;
+			facebox.landmarks[2 * j+1] = y1 + ymap[index] *  s0; // box_h;
 		}
 		faces_tmp.push_back(facebox);
 	}
