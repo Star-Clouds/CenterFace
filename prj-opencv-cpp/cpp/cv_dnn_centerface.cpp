@@ -160,7 +160,7 @@ void Centerface::decode(cv::Mat & heatmap, cv::Mat & scale, cv::Mat & offset, cv
 			for (int j = 0; j < 5; j++) {
 				float *xmap = (float*)landmarks.data + (2 * j+1)*spacial_size;
 				float *ymap= (float*)landmarks.data + (2 * j)*spacial_size;
-				facebox.landmarks[2*j] = x1 + xmap[index] * s1
+				facebox.landmarks[2*j] = x1 + xmap[index] * s1;
 				facebox.landmarks[2*j+1]= y1 + ymap[index] * s0;
 	
 			}
