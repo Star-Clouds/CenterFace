@@ -6,7 +6,8 @@
 #include<math.h>
 #include<opencv2/opencv.hpp>
 
-
+#define NMS_UNION 1
+#define NMS_MIN  2
 typedef struct FaceInfo {
 	float x1;
 	float y1;
@@ -27,7 +28,7 @@ public:
 	void detect(cv::Mat &image, std::vector<FaceInfo>&faces, cv::Size resized,float scoreThresh = 0.5,float nmsThresh=0.3);
 
 private:
-	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output,float nmsthreshold=0.3);
+	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output,float nmsthreshold=0.3,int type=NMS_MIN);
 	void decode(cv::Mat &heatmap,cv::Mat &scale,cv::Mat &offset,cv::Mat &landmarks, std::vector<FaceInfo>&faces,float scoreThresh,float nmsThresh);
 	void dynamic_scale(float in_w,float in_h);
 	std::vector<int> getIds(float *heatmap,int h,int w,float thresh);
