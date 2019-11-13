@@ -12,6 +12,7 @@ typedef struct FaceInfo {
 	float x2;
 	float y2;
 	float score;
+	float area;
 	float landmarks[10];
 };
 
