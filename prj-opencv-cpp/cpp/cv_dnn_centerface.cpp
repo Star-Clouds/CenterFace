@@ -43,62 +43,57 @@ void Centerface::detect(cv::Mat & image, std::vector<FaceInfo>& faces, cv::Size 
 
 void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold)
 {
+	if (input.empty()) {
+		return;
+	}
 	std::sort(input.begin(), input.end(),
 		[](const FaceInfo& a, const FaceInfo& b)
-	{
-		return a.score > b.score;
-	});
-
-	int box_num = input.size();
-
-	std::vector<int> merged(box_num, 0);
-
-	for (int i = 0; i < box_num; i++)
-	{
-		if (merged[i])
-			continue;
-
-		output.push_back(input[i]);
-
-		float h0 = input[i].y2 - input[i].y1 + 1;
-		float w0 = input[i].x2 - input[i].x1 + 1;
-
-		float area0 = h0 * w0;
-
-
-		for (int j = i + 1; j < box_num; j++)
 		{
-			if (merged[j])
-				continue;
+			return a.score < b.score;
+		});
 
-			float inner_x0 = input[i].x1 > input[j].x1 ? input[i].x1 : input[j].x1;//std::max(input[i].x1, input[j].x1);
-			float inner_y0 = input[i].y1 > input[j].y1 ? input[i].y1 : input[j].y1;
-
-			float inner_x1 = input[i].x2 < input[j].x2 ? input[i].x2 : input[j].x2;  //bug fixed ,sorry
-			float inner_y1 = input[i].y2 < input[j].y2 ? input[i].y2 : input[j].y2;
-
-			float inner_h = inner_y1 - inner_y0 + 1;
-			float inner_w = inner_x1 - inner_x0 + 1;
-
-
-			if (inner_h <= 0 || inner_w <= 0)
-				continue;
-
-			float inner_area = inner_h * inner_w;
-
-			float h1 = input[j].y2 - input[j].y1 + 1;
-			float w1 = input[j].x2 - input[j].x1 + 1;
-
-			float area1 = h1 * w1;
-
-			float score;
-
-			score = inner_area / (area0 + area1 - inner_area);
-
-			if (score > nmsthreshold)
-				merged[j] = 1;
+	float IOU = 0;
+	float maxX = 0;
+	float maxY = 0;
+	float minX = 0;
+	float minY = 0;
+	std::vector<int> vPick;
+	int nPick = 0;
+	std::multimap<float, int> vScores;
+	const int num_boxes = input.size();
+	vPick.resize(num_boxes);
+	for (int i = 0; i < num_boxes; ++i) {
+		vScores.insert(std::pair<float, int>(input[i].score, i));
+	}
+	while (vScores.size() > 0) {
+		int last = vScores.rbegin()->second;
+		vPick[nPick] = last;
+		nPick += 1;
+		for (std::multimap<float, int>::iterator it = vScores.begin(); it != vScores.end();) {
+			int it_idx = it->second;
+			maxX = max(input.at(it_idx).x1, input.at(last).x1);
+			maxY = max(input.at(it_idx).y1, input.at(last).y1);
+			minX = min(input.at(it_idx).x2, input.at(last).x2);
+			minY = min(input.at(it_idx).y2, input.at(last).y2);
+			//maxX1 and maxY1 reuse 
+			maxX = ((minX - maxX + 1) > 0) ? (minX - maxX + 1) : 0;
+			maxY = ((minY - maxY + 1) > 0) ? (minY - maxY + 1) : 0;
+			//IOU reuse for the area of two bbox
+			IOU = maxX * maxY;
+			IOU = IOU / (input.at(it_idx).area + input.at(last).area - IOU);
+			if (IOU > threshold) {
+				it = vScores.erase(it);
+			}
+			else {
+				it++;
+			}
 		}
+	}
 
+	vPick.resize(nPick);
+	output.resize(nPick);
+	for (int i = 0; i < nPick; i++) {
+		output[i] = input[vPick[i]];
 	}
 }
 
@@ -148,6 +143,7 @@ void Centerface::decode(cv::Mat & heatmap, cv::Mat & scale, cv::Mat & offset, cv
 			facebox.x2 =x2;
 			facebox.y2 = y2;
 			facebox.score = heatmap_[index];
+		        facebox.area=(facebox.x2-facebox.x1)*(facebox.y2-facebox.y1);
 
 			//float box_w = std::min(x1 + s1, (float)d_w)-x1;
 			//float box_h = std::min(y1 + s0, (float)d_h)-y1;
