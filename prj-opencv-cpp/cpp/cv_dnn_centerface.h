@@ -13,6 +13,7 @@ typedef struct FaceInfo {
 	float x2;
 	float y2;
 	float score;
+	float area;
 	//std::vector<cv::Point2f> landmarks;
 	float landmarks[10];
 };
