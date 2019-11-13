@@ -41,7 +41,7 @@ void Centerface::detect(cv::Mat & image, std::vector<FaceInfo>& faces, cv::Size 
 	squareBox(faces);
 }
 
-void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold)
+void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold,int type)
 {
 	if (input.empty()) {
 		return;
@@ -80,7 +80,11 @@ void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output
 			maxY = ((minY - maxY + 1) > 0) ? (minY - maxY + 1) : 0;
 			//IOU reuse for the area of two bbox
 			IOU = maxX * maxY;
-			IOU = IOU / (input.at(it_idx).area + input.at(last).area - IOU);
+			if (type==NMS_UNION)
+				IOU = IOU / (input.at(it_idx).area + input.at(last).area - IOU);
+			else if (type == NMS_MIN) {
+				IOU = IOU / ((input.at(it_idx).area < input.at(last).area) ? input.at(it_idx).area : input.at(last).area);
+			}
 			if (IOU > threshold) {
 				it = vScores.erase(it);
 			}
