@@ -1,8 +1,9 @@
-#include "cv_dnn_centerface.h"
+#include "centerface.h"
 
-Centerface::Centerface(std::string model_path)
+Centerface::Centerface(std::string model_path, int width, int height)
 {
 	net = cv::dnn::readNetFromONNX(model_path);
+	dynamic_scale(width, height);
 }
 
 Centerface::~Centerface()
@@ -10,25 +11,14 @@ Centerface::~Centerface()
 
 }
 
-void Centerface::detect(cv::Mat & image, std::vector<FaceInfo>& faces, cv::Size resize_shape, float scoreThresh, float nmsThresh)
+void Centerface::detect(cv::Mat & image, std::vector<FaceInfo>& faces, float scoreThresh, float nmsThresh)
 {
 	image_h = image.rows;
 	image_w = image.cols;
 
-	int resized_h = resize_shape.height;
-	int resized_w = resize_shape.width;
-	
-	scale_w = (float)image_w / (float)resized_w;
-	scale_h = (float)image_h / (float)resized_h;
 
-	cv::Mat resized;
-
-	//if (image_w == resized_w&&image_h == resized_h)
-	//	resized = image;
-	//else
-	//	cv::resize(image, resized, resize_shape);
-
-	dynamic_scale(resized_w, resized_h);
+	scale_w = (float)image_w / (float)d_w;
+	scale_h = (float)image_h / (float)d_h;
 
 	cv::Mat inputBlob = cv::dnn::blobFromImage(image, 1.0, cv::Size(d_w, d_h), cv::Scalar(0, 0, 0), true);
 	net.setInput(inputBlob);
@@ -41,9 +31,9 @@ void Centerface::detect(cv::Mat & image, std::vector<FaceInfo>& faces, cv::Size 
 	squareBox(faces);
 }
 
-void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold,int type)
+void Centerface::nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold)
 {
-    	std::sort(input.begin(), input.end(),
+	std::sort(input.begin(), input.end(),
 		[](const FaceInfo& a, const FaceInfo& b)
 	{
 		return a.score > b.score;
@@ -115,6 +105,7 @@ void Centerface::decode(cv::Mat & heatmap, cv::Mat & scale, cv::Mat & offset, cv
 
 	float *offset0 = (float*)(offset.data);
 	float *offset1 = offset0 + spacial_size;
+	float *lm = (float*)landmarks.data;
 
 	std::vector<int> ids = getIds(heatmap_, fea_h, fea_w, scoreThresh);
 	//std::cout << ids.size() << std::endl;
@@ -148,22 +139,20 @@ void Centerface::decode(cv::Mat & heatmap, cv::Mat & scale, cv::Mat & offset, cv
 			facebox.x2 =x2;
 			facebox.y2 = y2;
 			facebox.score = heatmap_[index];
-		        facebox.area=(facebox.x2-facebox.x1)*(facebox.y2-facebox.y1);
 
 			//float box_w = std::min(x1 + s1, (float)d_w)-x1;
 			//float box_h = std::min(y1 + s0, (float)d_h)-y1;
 
-			float box_w =x2 - x1;//s1?
-			float box_h = y2 - y1;// s0 ?
+			float box_w =x2 - x1;
+			float box_h = y2 - y1;
 
 			//std::cout << facebox.x1 << " " << facebox.y1 << " " << facebox.x2 << " " << facebox.y2 << std::endl;
 
 			for (int j = 0; j < 5; j++) {
-				float *xmap = (float*)landmarks.data + (2 * j+1)*spacial_size;
-				float *ymap= (float*)landmarks.data + (2 * j)*spacial_size;
-				facebox.landmarks[2*j] = x1 + xmap[index] * s1;
-				facebox.landmarks[2*j+1]= y1 + ymap[index] * s0;
-	
+				facebox.landmarks[2*j] = x1 + lm[(2*j+1)*spacial_size+index] * s1;
+				facebox.landmarks[2*j+1]= y1 + lm[(2 * j)*spacial_size + index] * s0;
+				//std::cout << facebox.x1 << " " << facebox.y1 <<  std::endl;
+				//std::cout << facebox.landmarks[2 * j] << " " << facebox.landmarks[2 * j+1]  << std::endl;
 			}
 			faces_tmp.push_back(facebox);
 	}
