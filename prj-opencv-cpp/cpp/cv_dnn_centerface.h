@@ -6,29 +6,26 @@
 #include<math.h>
 #include<opencv2/opencv.hpp>
 
-#define NMS_UNION 1
-#define NMS_MIN  2
+
 typedef struct FaceInfo {
 	float x1;
 	float y1;
 	float x2;
 	float y2;
 	float score;
-	float area;
-	//std::vector<cv::Point2f> landmarks;
 	float landmarks[10];
 };
 
 
 class Centerface {
 public:
-	Centerface(std::string model_path);
+	Centerface(std::string model_path,int width,int height);
 	~Centerface();
 
-	void detect(cv::Mat &image, std::vector<FaceInfo>&faces, cv::Size resized,float scoreThresh = 0.5,float nmsThresh=0.3);
+	void detect(cv::Mat &image, std::vector<FaceInfo>&faces, float scoreThresh = 0.5,float nmsThresh=0.3);
 
 private:
-	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output,float nmsthreshold=0.3,int type=NMS_MIN);
+	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output,float nmsthreshold=0.3);
 	void decode(cv::Mat &heatmap,cv::Mat &scale,cv::Mat &offset,cv::Mat &landmarks, std::vector<FaceInfo>&faces,float scoreThresh,float nmsThresh);
 	void dynamic_scale(float in_w,float in_h);
 	std::vector<int> getIds(float *heatmap,int h,int w,float thresh);
@@ -39,8 +36,8 @@ private:
 	float d_scale_h;
 	float d_scale_w;
 
-	float scale_h;
-	float scale_w;
+	float scale_w ;
+	float scale_h ;
 
 	int image_h;
 	int image_w;
