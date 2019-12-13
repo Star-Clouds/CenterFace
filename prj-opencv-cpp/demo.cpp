@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 	cv::Mat image = cv::imread(image_file);
 	std::vector<FaceInfo> face_info;
 	
-	centerface.detect(image, face_info, cv::Size(image.cols, image.rows));
+	centerface.detect(image, face_info);
 
 	for (int i = 0; i < face_info.size(); i++) {
 		cv::rectangle(image, cv::Point(face_info[i].x1, face_info[i].y1), cv::Point(face_info[i].x2, face_info[i].y2), cv::Scalar(0, 255, 0), 2);
