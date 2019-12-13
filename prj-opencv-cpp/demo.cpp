@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 	std::string model_path = argv[1];
 	std::string image_file = argv[2];
 
-	Centerface centerface(model_path);
+	Centerface centerface(model_path,640,480);
 
 	cv::Mat image = cv::imread(image_file);
 	std::vector<FaceInfo> face_info;
