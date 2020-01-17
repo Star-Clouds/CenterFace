@@ -3,6 +3,8 @@
 #include<iostream>
 #include<algorithm>
 #include<numeric>
+#include<map>
+#include<string>
 #include "net.h"
 
 #define NMS_UNION 1
