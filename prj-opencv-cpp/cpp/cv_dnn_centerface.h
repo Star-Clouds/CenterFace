@@ -13,17 +13,16 @@ typedef struct FaceInfo {
 	float x2;
 	float y2;
 	float score;
-	//std::vector<cv::Point2f> landmarks;
 	float landmarks[10];
 };
 
 
 class Centerface {
 public:
-	Centerface(std::string model_path);
+	Centerface(std::string model_path,int width,int height);
 	~Centerface();
 
-	void detect(cv::Mat &image, std::vector<FaceInfo>&faces, cv::Size resized,float scoreThresh = 0.5,float nmsThresh=0.3);
+	void detect(cv::Mat &image, std::vector<FaceInfo>&faces, float scoreThresh = 0.5,float nmsThresh=0.3);
 
 private:
 	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output,float nmsthreshold=0.3);
@@ -37,8 +36,8 @@ private:
 	float d_scale_h;
 	float d_scale_w;
 
-	float scale_h;
-	float scale_w;
+	float scale_w ;
+	float scale_h ;
 
 	int image_h;
 	int image_w;

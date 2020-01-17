@@ -3,8 +3,12 @@
 #include<iostream>
 #include<algorithm>
 #include<numeric>
+#include<map>
+#include<string>
 #include "net.h"
 
+#define NMS_UNION 1
+#define NMS_MIN  2
 
 typedef struct FaceInfo {
 	float x1;
@@ -12,6 +16,7 @@ typedef struct FaceInfo {
 	float x2;
 	float y2;
 	float score;
+	float area;
 	float landmarks[10];
 };
 
@@ -31,7 +36,7 @@ private:
 	void dynamicScale(float in_w, float in_h);
 	void squareBox(std::vector<FaceInfo> &faces);
 	void genIds(float *heatmap, int h, int w, float thresh, std::vector<int> &ids);
-	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold = 0.3);
+	void nms(std::vector<FaceInfo>& input, std::vector<FaceInfo>& output, float nmsthreshold = 0.3,int type=NMS_MIN);
 	void decode(ncnn::Mat &heatmap, ncnn::Mat &scale, ncnn::Mat &offset, ncnn::Mat &landmarks,
 		std::vector<FaceInfo>&faces, float scoreThresh, float nmsThresh);
 private:
