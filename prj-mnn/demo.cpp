@@ -11,13 +11,13 @@ int main(int argc, char** argv) {
 	const char* model_path = argv[1];
 	const char* image_file = argv[2];
 
-	mirror::Centerface* centerface = new mirror::Centerface();
+	Centerface* centerface = new Centerface();
 
 	centerface->Init(model_path);
 
 	cv::Mat img_src = cv::imread(image_file);
 
-	std::vector<mirror::FaceInfo> faces;
+	std::vector<FaceInfo> faces;
 	centerface->Detect(img_src, &faces);
 
 	int num_faces = static_cast<float>(faces.size());

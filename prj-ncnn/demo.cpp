@@ -28,7 +28,6 @@ int main(int argc, char** argv) {
 			cv::circle(image, cv::Point(face_info[i].landmarks[2*j], face_info[i].landmarks[2*j+1]), 2, cv::Scalar(255, 255, 0), 2);
 		}
 	}
-
 	cv::imshow("test", image);
 	cv::waitKey();
 

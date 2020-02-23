@@ -1,4 +1,4 @@
-#include "centerface.h"
+#include "cv_dnn_centerface.h"
 
 Centerface::Centerface(std::string model_path, int width, int height)
 {

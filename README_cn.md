@@ -83,3 +83,4 @@ CenterFace-small|4.4ms|5.7ms|7.3ms
 ### 贡献者：
  - [ywlife](https://github.com/ywlife)
  - [SyGoing](https://github.com/SyGoing)
+ - [MirrorYuChen](https://github.com/MirrorYuChen)

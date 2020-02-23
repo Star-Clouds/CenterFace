@@ -11,7 +11,6 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 
-namespace mirror {
 struct FaceInfo {
 	cv::Rect face_;
 	float score_;
@@ -97,8 +96,6 @@ private:
 	const float nmsThreshold_ = 0.5f;
 
 };
-
-}
 
 
 #endif  // !_FACE_CENTERFACE_H_

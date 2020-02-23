@@ -1,10 +1,10 @@
-### the C++ version of centerface with opencv by SyGoing
+### The C++ version of CenterFace with OpenCV 
 
 ## requirement
 - opencv 3.4.2 or higher (with cv::dnn)
 
 ## usage 
- * cd centerface/prj-opencv-cpp
+ * cd CenterFace/prj-opencv-cpp
  * mkdir build && cd build && cmake && make
  * ./demo ../../models/onnx  your_image_path
  

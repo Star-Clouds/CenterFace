@@ -82,6 +82,7 @@ CenterFace-small|4.4ms|5.7ms|7.3ms
 ### Author
  - [ywlife](https://github.com/ywlife)
  - [SyGoing](https://github.com/SyGoing)
+ - [MirrorYuChen](https://github.com/MirrorYuChen)
 
 ###  Citation
 If you benefit from our work in your research and product, please consider to cite the following related papers:

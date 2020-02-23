@@ -5,8 +5,6 @@
 
 #include "opencv2/imgproc.hpp"
 
-namespace mirror {
-
 Centerface::Centerface() {
 	initialized_ = false;
 }
@@ -140,6 +138,4 @@ int Centerface::Detect(const cv::Mat & img_src, std::vector<FaceInfo>* faces) {
 	return 0;
 }
 
-
-}
 

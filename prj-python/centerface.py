@@ -4,15 +4,19 @@ import datetime
 
 
 class CenterFace(object):
-    def __init__(self, height, width, landmarks=True):
+    def __init__(self, landmarks=True):
         self.landmarks = landmarks
         if self.landmarks:
             self.net = cv2.dnn.readNetFromONNX('../models/onnx/centerface.onnx')
         else:
             self.net = cv2.dnn.readNetFromONNX('../models/onnx/cface.1k.onnx')
-        self.img_h_new, self.img_w_new, self.scale_h, self.scale_w = self.transform(height, width)
+        self.img_h_new, self.img_w_new, self.scale_h, self.scale_w = 0, 0, 0, 0
 
-    def __call__(self, img, threshold=0.5):
+    def __call__(self, img, height, width, threshold=0.5):
+        self.img_h_new, self.img_w_new, self.scale_h, self.scale_w = self.transform(height, width)
+        return self.inference_opencv(img, threshold)
+
+    def inference_opencv(self, img, threshold):
         blob = cv2.dnn.blobFromImage(img, scalefactor=1.0, size=(self.img_w_new, self.img_h_new), mean=(0, 0, 0), swapRB=True, crop=False)
         self.net.setInput(blob)
         begin = datetime.datetime.now()
@@ -20,14 +24,20 @@ class CenterFace(object):
             heatmap, scale, offset, lms = self.net.forward(["537", "538", "539", '540'])
         else:
             heatmap, scale, offset = self.net.forward(["535", "536", "537"])
-
         end = datetime.datetime.now()
         print("cpu times = ", end - begin)
+        return self.postprocess(heatmap, lms, offset, scale, threshold)
+
+    def transform(self, h, w):
+        img_h_new, img_w_new = int(np.ceil(h / 32) * 32), int(np.ceil(w / 32) * 32)
+        scale_h, scale_w = img_h_new / h, img_w_new / w
+        return img_h_new, img_w_new, scale_h, scale_w
+
+    def postprocess(self, heatmap, lms, offset, scale, threshold):
         if self.landmarks:
             dets, lms = self.decode(heatmap, scale, offset, lms, (self.img_h_new, self.img_w_new), threshold=threshold)
         else:
             dets = self.decode(heatmap, scale, offset, None, (self.img_h_new, self.img_w_new), threshold=threshold)
-
         if len(dets) > 0:
             dets[:, 0:4:2], dets[:, 1:4:2] = dets[:, 0:4:2] / self.scale_w, dets[:, 1:4:2] / self.scale_h
             if self.landmarks:
@@ -40,11 +50,6 @@ class CenterFace(object):
             return dets, lms
         else:
             return dets
-
-    def transform(self, h, w):
-        img_h_new, img_w_new = int(np.ceil(h / 32) * 32), int(np.ceil(w / 32) * 32)
-        scale_h, scale_w = img_h_new / h, img_w_new / w
-        return img_h_new, img_w_new, scale_h, scale_w
 
     def decode(self, heatmap, scale, offset, landmark, size, threshold=0.1):
         heatmap = np.squeeze(heatmap)
