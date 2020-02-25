@@ -6,5 +6,4 @@
 
 ## usage 
  * cd CenterFace/prj-tensorrt
- * mkdir build && cd build && cmake .. && make -j3
  * python demo.py
