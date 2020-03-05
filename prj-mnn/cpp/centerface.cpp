@@ -1,5 +1,6 @@
 #include "centerface.h"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
