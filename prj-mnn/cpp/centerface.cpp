@@ -133,6 +133,10 @@ int Centerface::Detect(const cv::Mat & img_src, std::vector<FaceInfo>* faces) {
 			faces_tmp.push_back(face_info);
 		}
 	}
+    std::sort(faces_tmp.begin(), faces_tmp.end(),
+    [](const FaceInfo& a, const FaceInfo& b) {
+        return a.score_ < b.score_;
+    });
 	NMS(faces_tmp, faces, nmsThreshold_);
 	std::cout << "end detect." << std::endl;
 	return 0;
