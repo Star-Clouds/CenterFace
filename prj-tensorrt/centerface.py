@@ -14,6 +14,9 @@ class CenterFace(object):
         runtime = trt.Runtime(self.trt_logger)
         self.net = runtime.deserialize_cuda_engine(f.read())
         self.img_h_new, self.img_w_new, self.scale_h, self.scale_w = 0, 0, 0, 0
+        self.engine = self.net
+        # Create the context for this engine
+        self.context = self.engine.create_execution_context()
 
     def __call__(self, img, height, width, threshold=0.5):
         h, w = img.shape[:2]
@@ -67,12 +70,8 @@ class CenterFace(object):
 
         image_cv = cv2.resize(img, dsize=(self.img_w_new, self.img_h_new))
         blob = np.expand_dims(image_cv[:, :, (2, 1, 0)].transpose(2, 0, 1), axis=0).astype("float32")
-        engine = self.net
-
-        # Create the context for this engine
-        context = engine.create_execution_context()
-        # Allocate buffers for input and output
-        inputs, outputs, bindings, stream = allocate_buffers(engine)  # input, output: host # bindings
+        
+        inputs, outputs, bindings, stream = allocate_buffers(self.engine)  # input, output: host # bindings
 
         # Do inference
         shape_of_output = [(1, 1, int(self.img_h_new / 4), int(self.img_w_new / 4)),
@@ -82,7 +81,7 @@ class CenterFace(object):
         # Load data to the buffer
         inputs[0].host = blob.reshape(-1)
         begin = datetime.datetime.now()
-        trt_outputs = do_inference(context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream)  # numpy data
+        trt_outputs = do_inference(self.context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream)  # numpy data
         end = datetime.datetime.now()
         print("gpu times = ", end - begin)
 
